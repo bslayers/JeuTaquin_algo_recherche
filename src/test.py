@@ -41,7 +41,7 @@ def run_single_test(size):
             execution_time = test(jeu_copy, initial_state.copy())
             results[name].append(execution_time)
             completed_tests[name] += 1
-            print(f"{name.upper()} terminé en {execution_time:.8f} secondes")
+            print(f"{name.upper()} terminé en {execution_time:.12f} secondes")
             
     except KeyboardInterrupt:
         raise KeyboardInterrupt(results, completed_tests)
@@ -103,10 +103,10 @@ def format_results(grid_results):
         for algo, stats in results.items():
             output.append(f"\n{algo.upper()} (Tests complétés: {stats['completed_tests']}):")
             if stats['times']:
-                output.append(f"  Temps minimum: {stats['min']:.8f} secondes")
-                output.append(f"  Temps maximum: {stats['max']:.8f} secondes")
-                output.append(f"  Temps moyen: {stats['avg']:.8f} secondes")
-                output.append(f"  Détail des temps: {', '.join([f'{t:.8f}' for t in stats['times']])}")
+                output.append(f"  Temps minimum: {stats['min']:.12f} secondes")
+                output.append(f"  Temps maximum: {stats['max']:.12f} secondes")
+                output.append(f"  Temps moyen: {stats['avg']:.12f} secondes")
+                output.append(f"  Détail des temps: {', '.join([f'{t:.12f}' for t in stats['times']])}")
             else:
                 output.append("  Aucun test complété")
     

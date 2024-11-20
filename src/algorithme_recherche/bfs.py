@@ -10,7 +10,7 @@ def bfs_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000):
     start_key = key(start_state)
     visited.add(start_key)
     
-    parents = {start_key: None}
+    #parents = {start_key: None}
 
     while queue:
         current_state = queue.pop()
@@ -20,7 +20,7 @@ def bfs_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000):
 
         if jeu.is_final_state(current_state):
             print("État final trouvé!")
-            jeu.solution_path = reconstruct_path(parents, current_key)
+            #jeu.solution_path = reconstruct_path(parents, current_key)
             return
 
         possible_moves = jeu.get_possible_moves()
@@ -29,7 +29,7 @@ def bfs_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000):
             next_key = key(next_state)
             if next_key not in visited:
                 visited.add(next_key)
-                parents[next_key] = current_key
+                #parents[next_key] = current_key
                 queue.pushLast(next_state)
 
     jeu.display_state()

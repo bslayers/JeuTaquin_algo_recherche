@@ -26,7 +26,7 @@ def astar_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000) -> Non
     start_key = key(start_state)
     visited.add(start_key)
 
-    parents = {start_key: None}
+    #parents = {start_key: None}
 
     while queue:
 
@@ -37,7 +37,7 @@ def astar_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000) -> Non
         if jeu.is_final_state(current_state):
             print("État final trouvé!")
 
-            jeu.solution_path = reconstruct_path(parents, current_key)
+            #jeu.solution_path = reconstruct_path(parents, current_key)
             return
 
         for next_state in jeu.get_possible_moves():
@@ -50,7 +50,7 @@ def astar_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000) -> Non
                 next_f = next_g + next_h
 
                 visited.add(next_key)
-                parents[next_key] = current_key
+                #parents[next_key] = current_key
                 queue.push(next_state, next_g, next_f)
     
     print("État final non trouvé!")

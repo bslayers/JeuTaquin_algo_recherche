@@ -11,7 +11,7 @@ def dfs_search(jeu: JeuTaquin, start_state: dict, max_depth=100000):
     visited.add(start_key)
     
 
-    parents = {start_key: None}
+    #parents = {start_key: None}
 
     while stack:
         current_state, depth = stack.pop()
@@ -21,7 +21,7 @@ def dfs_search(jeu: JeuTaquin, start_state: dict, max_depth=100000):
         
         if jeu.is_final_state(current_state):
             print("État final trouvé!")
-            jeu.solution_path = reconstruct_path(parents, current_key)
+            #jeu.solution_path = reconstruct_path(parents, current_key)
             return
 
         if depth < max_depth:
@@ -31,7 +31,7 @@ def dfs_search(jeu: JeuTaquin, start_state: dict, max_depth=100000):
                 next_key = key(next_state)
                 if next_key not in visited:
                     visited.add(next_key)
-                    parents[next_key] = current_key
+                    #parents[next_key] = current_key
                     stack.pushFirst((next_state, depth + 1))
 
     jeu.display_state()
