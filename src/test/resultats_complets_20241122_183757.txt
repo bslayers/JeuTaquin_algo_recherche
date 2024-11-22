@@ -1,0 +1,17 @@
+Résultats des tests - 2024-11-22 18:37:57
+==================================================
+
+
+Résultats pour grille 4x4
+------------------------------
+
+ASTAR (Tests complétés: 1):
+  Temps minimum: 3.671139478683 secondes
+  Temps maximum: 3.671139478683 secondes
+  Temps moyen: 3.671139478683 secondes
+
+BFS (Tests complétés: 0):
+  Aucun test complété
+
+DFS (Tests complétés: 0):
+  Aucun test complété

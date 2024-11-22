@@ -2,7 +2,7 @@ from algorithme_recherche.FilePile import FilePile
 from jeu.jeuTaquin import JeuTaquin
 from algorithme_recherche.utile import *
 
-def dfs_search(jeu: JeuTaquin, start_state: dict, max_depth=100000):
+def dfs_search(jeu: JeuTaquin, start_state: dict, final_state: dict, max_depth=100000):
     visited = set()
     stack = FilePile()
     stack.pushFirst((start_state, 0))
@@ -14,12 +14,18 @@ def dfs_search(jeu: JeuTaquin, start_state: dict, max_depth=100000):
     #parents = {start_key: None}
 
     while stack:
-        current_state, depth = stack.pop()
-        current_key = key(current_state)
+        popped_item = stack.pop()
+
+        if popped_item is None:
+            continue
+        
+        current_state, depth = popped_item
+        
+        #current_key = key(current_state)
         
         jeu.set_current_state(current_state)
         
-        if jeu.is_final_state(current_state):
+        if current_state == final_state:
             print("État final trouvé!")
             #jeu.solution_path = reconstruct_path(parents, current_key)
             return

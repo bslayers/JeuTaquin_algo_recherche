@@ -3,55 +3,71 @@ from algorithme_recherche.FilePileAstar import FilePileAstar
 from algorithme_recherche.utile import *
 
 def manhattan_distance(state: dict, k: int) -> int:
-    """Calcule la distance de Manhattan pour un état"""
+    """Calcule la distance de Manhattan pour un état."""
     distance = 0
-    for value in range(1, k * k):
-        current_pos = state[value]
-        target_i = (value - 1) // k
-        target_j = (value - 1) % k
-        distance += abs(current_pos[0] - target_i) + abs(current_pos[1] - target_j)
+    for value, (x, y) in state.items():
+        if value != 0:
+            target_i = (value - 1) // k
+            target_j = (value - 1) % k
+            distance += abs(x - target_i) + abs(y - target_j)
     return distance
 
-
-def astar_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000) -> None:
-
+def astar_search(jeu: JeuTaquin, start_state: dict, final_state: dict):
+    
+    queue = FilePileAstar()
     visited = set()
-    queue = FilePileAstar(max_size=memory_limit)
-
+    #parents = {}
+    g_scores = {state_to_key(start_state): 0}
+    
     h_score = manhattan_distance(start_state, jeu.get_k())
-    g_score = 0 
+    g_score = 0
     f_score = g_score + h_score
-
+    
     queue.push(start_state, g_score, f_score)
-    start_key = key(start_state)
-    visited.add(start_key)
-
-    #parents = {start_key: None}
-
+    visited.add(state_to_key(start_state))
+    #parents[state_to_key(start_state)] = None
+    
+    expanded_nodes = 0
+    
     while queue:
-
-        current_state, current_g = queue.pop()
-        current_key = key(current_state)
+        popped = queue.pop()
+        if not popped:
+            continue
+        
+        current_state, current_g, current_f = popped
+        current_key = state_to_key(current_state)
+        
+        # Vérifier si c'est l'état final
+        if current_state == final_state:
+            print("Etat final trouvé:")
+            jeu.set_current_state(current_state)
+            jeu.display_state()
+            jeu.display_final_grid()
+            return current_state
+        
         jeu.set_current_state(current_state)
-
-        if jeu.is_final_state(current_state):
-            print("État final trouvé!")
-
-            #jeu.solution_path = reconstruct_path(parents, current_key)
-            return
-
+        
+        expanded_nodes += 1
+        
         for next_state in jeu.get_possible_moves():
-            next_key = key(next_state)
+            next_key = state_to_key(next_state)
             
-            if next_key not in visited:
-
-                next_g = current_g + 1 
-                next_h = manhattan_distance(next_state, jeu.get_k())
-                next_f = next_g + next_h
-
-                visited.add(next_key)
+            # Éviter de revisiter des états déjà explorés
+            if next_key in visited:
+                continue
+            
+            tentative_g_score = current_g + 1
+            
+            # Mettre à jour les scores si nouveau chemin plus court
+            if next_key not in g_scores or tentative_g_score < g_scores[next_key]:
                 #parents[next_key] = current_key
-                queue.push(next_state, next_g, next_f)
+                g_scores[next_key] = tentative_g_score
+                next_h = manhattan_distance(next_state, jeu.get_k())
+                next_f = tentative_g_score + next_h
+                
+                visited.add(next_key)
+                queue.push(next_state, tentative_g_score, next_f)
     
-    print("État final non trouvé!")
-    
+    print("Aucune solution trouvée")
+    return None
+

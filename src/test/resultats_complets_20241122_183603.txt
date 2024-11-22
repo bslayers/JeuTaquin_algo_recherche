@@ -1,0 +1,15 @@
+Résultats des tests - 2024-11-22 18:36:03
+==================================================
+
+
+Résultats pour grille 4x4
+------------------------------
+
+ASTAR (Tests complétés: 0):
+  Aucun test complété
+
+BFS (Tests complétés: 0):
+  Aucun test complété
+
+DFS (Tests complétés: 0):
+  Aucun test complété

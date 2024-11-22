@@ -2,7 +2,7 @@ from jeu.jeuTaquin import JeuTaquin
 from algorithme_recherche.FilePile import FilePile
 from algorithme_recherche.utile import *
 
-def bfs_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000):
+def bfs_search(jeu: JeuTaquin, start_state: dict, final_state: dict, memory_limit=5000000):
     visited = set()
     queue = FilePile(max_size=memory_limit)
 
@@ -14,11 +14,13 @@ def bfs_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000):
 
     while queue:
         current_state = queue.pop()
-        current_key = key(current_state)
+        if current_state is None:
+            continue
+        #current_key = key(current_state)
         
         jeu.set_current_state(current_state)
 
-        if jeu.is_final_state(current_state):
+        if current_state == final_state:
             print("État final trouvé!")
             #jeu.solution_path = reconstruct_path(parents, current_key)
             return
@@ -27,6 +29,7 @@ def bfs_search(jeu: JeuTaquin, start_state: dict, memory_limit=5000000):
         
         for next_state in possible_moves:
             next_key = key(next_state)
+            
             if next_key not in visited:
                 visited.add(next_key)
                 #parents[next_key] = current_key
