@@ -1,0 +1,35 @@
+Résultats des tests - 2024-11-23 17:51:03
+==================================================
+
+
+Résultats pour grille 3x3
+------------------------------
+
+ASTAR (Tests complétés: 100):
+  Temps minimum: 0.000363588333 secondes
+  Temps maximum: 0.090625524521 secondes
+  Temps moyen: 0.008111906052 secondes
+
+BFS (Tests complétés: 100):
+  Temps minimum: 0.004353523254 secondes
+  Temps maximum: 1.273912191391 secondes
+  Temps moyen: 0.656518375874 secondes
+
+DFS (Tests complétés: 100):
+  Temps minimum: 0.003350496292 secondes
+  Temps maximum: 1.210188150406 secondes
+  Temps moyen: 0.507189302444 secondes
+
+Résultats pour grille 4x4
+------------------------------
+
+ASTAR (Tests complétés: 1):
+  Temps minimum: 164.284037351608 secondes
+  Temps maximum: 164.284037351608 secondes
+  Temps moyen: 164.284037351608 secondes
+
+BFS (Tests complétés: 0):
+  Aucun test complété
+
+DFS (Tests complétés: 0):
+  Aucun test complété

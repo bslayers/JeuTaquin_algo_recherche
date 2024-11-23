@@ -6,6 +6,14 @@ from algorithme_recherche.bfs import bfs_search
 from algorithme_recherche.dfs import dfs_search
 from algorithme_recherche.astar import astar_search 
 
+# Codes couleur ANSI
+class Colors:
+    ASTAR = '\033[94m'  # Bleu
+    BFS = '\033[92m'    # Vert
+    DFS = '\033[93m'    # Jaune
+    FAIL = '\033[91m'   # Rouge
+    END = '\033[0m'     # Réinitialisation
+
 precision:int = 12
 
 def test_bfs(jeu, initial_state, final_state=None):
@@ -14,10 +22,10 @@ def test_bfs(jeu, initial_state, final_state=None):
         return None
     try:
         bfs_search(jeu, initial_state.copy(), final_state)
-        return time.time() - start_time
+        return time.time() - start_time, True
     except Exception as e:
-        print(f"Erreur dans bfs : {e}")
-        return float('inf')
+        print(f"{Colors.FAIL}Erreur dans bfs : {e}{Colors.END}")
+        return float('inf'), False
 
 def test_dfs(jeu, initial_state, final_state=None):
     start_time = time.time()
@@ -25,95 +33,119 @@ def test_dfs(jeu, initial_state, final_state=None):
         return None
     try:
         dfs_search(jeu, initial_state.copy(), final_state)
-        return time.time() - start_time
+        return time.time() - start_time, True
     except Exception as e:
-        print(f"Erreur dans dfs : {e}")
-        return float('inf')
+        print(f"{Colors.FAIL}Erreur dans dfs : {e}{Colors.END}")
+        return float('inf'), False
 
 def test_astar(jeu, initial_state, final_state=None):
-    start_time = time.time()
     if final_state is None:
-        return None
+        return None, False
+    
+    start_time = time.time()
     try:
-        astar_search(jeu, initial_state.copy(), final_state)
-        return time.time() - start_time
+        result = astar_search(jeu, initial_state.copy(), final_state)
+        if result is None:
+            return time.time() - start_time, False
+        return time.time() - start_time, True
     except Exception as e:
-        print(f"Erreur dans A* : {e}")
-        return float('inf')
+        print(f"{Colors.FAIL}Erreur dans A* : {e}{Colors.END}")
+        return float('inf'), False
 
 def run_single_test(size, final_state=None):
     jeu = JeuTaquin(size)
     initial_state = jeu.generate_random_state()
     results = {'astar': [], 'bfs': [], 'dfs': []}
     completed_tests = {'astar': 0, 'bfs': 0, 'dfs': 0}
+    failed_attempts = {'astar': 0, 'bfs': 0, 'dfs': 0}
     
+    # Pour la taille 4, on ne teste que A*
+    if size == 4:
+        try:
+            jeu_copy = JeuTaquin(size)
+            jeu_copy.set_current_state(initial_state.copy())
+            time_result, success = test_astar(jeu_copy, initial_state.copy(), final_state)
+            if success and time_result is not None:
+                results['astar'].append(time_result)
+                completed_tests['astar'] += 1
+                print(f"{Colors.ASTAR}A* terminé en {time_result:{precision}f} secondes{Colors.END}")
+            else:
+                failed_attempts['astar'] += 1
+                print(f"{Colors.FAIL}A* : Solution non trouvée{Colors.END}")
+        except Exception as e:
+            print(f"{Colors.FAIL}Erreur inattendue : {e}{Colors.END}")
+            failed_attempts['astar'] += 1
+        return results, completed_tests, failed_attempts
+    
+    # Pour la taille 3, on teste tous les algorithmes
     algorithms = [
-        ('astar', test_astar),
-        ('bfs', test_bfs),
-        ('dfs', test_dfs)
+        ('astar', test_astar, Colors.ASTAR),
+        ('bfs', test_bfs, Colors.BFS),
+        ('dfs', test_dfs, Colors.DFS)
     ]
     
     try:
-        for name, test in algorithms:
+        for name, test, color in algorithms:
             jeu_copy = JeuTaquin(size)
             jeu_copy.set_current_state(initial_state.copy())
             
-            execution_time = test(jeu_copy, initial_state.copy(), final_state)
-            results[name].append(execution_time)
-            completed_tests[name] += 1
-            print(f"{name.upper()} terminé en {execution_time:{precision}f} secondes")
+            execution_time, success = test(jeu_copy, initial_state.copy(), final_state)
+            if success and execution_time is not None:
+                results[name].append(execution_time)
+                completed_tests[name] += 1
+                print(f"{color}{name.upper()} terminé en {execution_time:{precision}f} secondes{Colors.END}")
+            else:
+                failed_attempts[name] += 1
+                print(f"{Colors.FAIL}{name.upper()} : Solution non trouvée{Colors.END}")
             
     except KeyboardInterrupt:
-        raise KeyboardInterrupt(results, completed_tests)
+        raise KeyboardInterrupt(results, completed_tests, failed_attempts)
     
-    return results, completed_tests
+    return results, completed_tests, failed_attempts
 
 def run_multiple_tests(size, num_tests=10, final_state=None):
     combined_results = {'astar': [], 'bfs': [], 'dfs': []}
     total_completed = {'astar': 0, 'bfs': 0, 'dfs': 0}
+    total_failed = {'astar': 0, 'bfs': 0, 'dfs': 0}
     
     try:
         for i in range(num_tests):
             print(f"\nTest #{i+1} pour grille {size}x{size}")
-            single_test_results, completed = run_single_test(size, final_state)
+            single_test_results, completed, failed = run_single_test(size, final_state)
             
             for algo in combined_results:
-                combined_results[algo].extend(single_test_results[algo])
-                total_completed[algo] += completed[algo]
+                if algo in single_test_results:
+                    combined_results[algo].extend(single_test_results[algo])
+                    total_completed[algo] += completed[algo]
+                    total_failed[algo] += failed[algo]
                 
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         print("\n\nInterruption détectée. Sauvegarde des résultats partiels...")
-        partial_results = e.args[0] if len(e.args) > 0 else {}
-        partial_completed = e.args[1] if len(e.args) > 1 else {}
-
-        # Merge the partial results with combined_results
-        for algo in combined_results:
-            if algo in partial_results:
-                combined_results[algo].extend(partial_results[algo])
-                total_completed[algo] += partial_completed.get(algo, 0)
-
-        raise KeyboardInterrupt(combined_results, total_completed)
+        # Plus besoin de vérifier len(e.args)
+        return combined_results, total_completed, total_failed
     
-    return combined_results, total_completed
+    return combined_results, total_completed, total_failed
 
-def calculate_statistics(results, completed_tests):
+def calculate_statistics(results, completed_tests, failed_tests):
     stats = {}
     for algo, times in results.items():
-        if times:
+        if times:  # Si des temps ont été enregistrés
             stats[algo] = {
                 'min': min(times),
                 'max': max(times),
                 'avg': sum(times) / len(times),
                 'times': times,
-                'completed_tests': completed_tests[algo]
+                'completed_tests': completed_tests[algo],
+                'failed_tests': failed_tests[algo]
             }
-        else:
+        else:  # Si aucun temps n'a été enregistré
             stats[algo] = {
                 'min': 0,
                 'max': 0,
                 'avg': 0,
                 'times': [],
-                'completed_tests': 0
+                'completed_tests': completed_tests[algo],
+                'failed_tests': failed_tests[algo]
             }
     return stats
 
@@ -121,19 +153,27 @@ def format_results(grid_results):
     output = [f"Résultats des tests - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"]
     output.append("=" * 50 + "\n")
     
+    colors = {
+        'astar': Colors.ASTAR,
+        'bfs': Colors.BFS,
+        'dfs': Colors.DFS
+    }
+    
     for size, results in grid_results.items():
         output.append(f"\nRésultats pour grille {size}x{size}")
         output.append("-" * 30)
         
         for algo, stats in results.items():
-            output.append(f"\n{algo.upper()} (Tests complétés: {stats['completed_tests']}):")
-            if stats['times']:
-                output.append(f"  Temps minimum: {stats['min']:.{precision}f} secondes")
-                output.append(f"  Temps maximum: {stats['max']:.{precision}f} secondes")
-                output.append(f"  Temps moyen: {stats['avg']:.{precision}f} secondes")
-                #output.append(f"  Détail des temps: {', '.join([f'{t:.{precision}f}' for t in stats['times']])}")
-            else:
-                output.append("  Aucun test complété")
+            if stats['completed_tests'] > 0 or stats['failed_tests'] > 0:
+                color = colors.get(algo, '')
+                output.append(f"\n{color}{algo.upper()}{Colors.END}")
+                output.append(f"Tests complétés: {stats['completed_tests']}")
+                output.append(f"Tests échoués: {stats['failed_tests']}")
+                
+                if stats['times']:
+                    output.append(f"  Temps minimum: {stats['min']:.{precision}f} secondes")
+                    output.append(f"  Temps maximum: {stats['max']:.{precision}f} secondes")
+                    output.append(f"  Temps moyen: {stats['avg']:.{precision}f} secondes")
     
     return "\n".join(output)
 
@@ -151,8 +191,7 @@ def save_results(formatted_results, filename):
             f.write(formatted_results)
         print(f"\nRésultats sauvegardés dans {chemin_fichier}")
     except Exception as e:
-        print(f"Erreur lors de la sauvegarde des résultats: {str(e)}")
-
+        print(f"{Colors.FAIL}Erreur lors de la sauvegarde des résultats: {str(e)}{Colors.END}")
 
 def calculate_final_state(k: int) -> dict:
     """Calcule l'état final pour une grille de taille k."""
@@ -161,29 +200,27 @@ def calculate_final_state(k: int) -> dict:
     return final_state
 
 def main():
-    grid_sizes = [4]
-    num_tests = 100
+    grid_sizes = [2,3,4]
+    num_tests = 1000
     all_results = {}
     
     try:
         print("Démarrage des tests...")
         for size in grid_sizes:
             print(f"\nTests pour grille {size}x{size}")
-            # Calculer l'état final une fois pour chaque taille
             final_state = calculate_final_state(size)
-            results, completed = run_multiple_tests(size, num_tests, final_state)
-            all_results[size] = calculate_statistics(results, completed)
+            results, completed, failed = run_multiple_tests(size, num_tests, final_state)
+            all_results[size] = calculate_statistics(results, completed, failed)
             
     except KeyboardInterrupt as e:
         print("\n\nInterruption détectée. Sauvegarde des résultats partiels...")
-        partial_results = e.args[0] if len(e.args) > 0 else {}
-        partial_completed = e.args[1] if len(e.args) > 1 else {}
-
-        current_size = grid_sizes[len(all_results)] if len(all_results) < len(grid_sizes) else "Unknown"
-        all_results[current_size] = calculate_statistics(partial_results, partial_completed)
+        if len(e.args) >= 3:
+            partial_results, partial_completed, partial_failed = e.args[:3]
+            current_size = grid_sizes[len(all_results)] if len(all_results) < len(grid_sizes) else "Unknown"
+            all_results[current_size] = calculate_statistics(partial_results, partial_completed, partial_failed)
     
     except Exception as e:
-        print(f"Erreur lors de l'exécution des tests: {str(e)}")
+        print(f"{Colors.FAIL}Erreur lors de l'exécution des tests: {str(e)}{Colors.END}")
     
     finally:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')

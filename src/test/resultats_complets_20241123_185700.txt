@@ -1,0 +1,37 @@
+Résultats des tests - 2024-11-23 18:57:00
+==================================================
+
+
+Résultats pour grille 3x3
+------------------------------
+
+[94mASTAR[0m
+Tests complétés: 10
+Tests échoués: 0
+  Temps minimum: 0.000718832016 secondes
+  Temps maximum: 0.018730640411 secondes
+  Temps moyen: 0.009112119675 secondes
+
+[92mBFS[0m
+Tests complétés: 10
+Tests échoués: 0
+  Temps minimum: 0.123238801956 secondes
+  Temps maximum: 1.317378997803 secondes
+  Temps moyen: 0.666159129143 secondes
+
+[93mDFS[0m
+Tests complétés: 10
+Tests échoués: 0
+  Temps minimum: 0.019305944443 secondes
+  Temps maximum: 1.035398006439 secondes
+  Temps moyen: 0.452175283432 secondes
+
+Résultats pour grille 4x4
+------------------------------
+
+[94mASTAR[0m
+Tests complétés: 1
+Tests échoués: 0
+  Temps minimum: 4.546685457230 secondes
+  Temps maximum: 4.546685457230 secondes
+  Temps moyen: 4.546685457230 secondes
