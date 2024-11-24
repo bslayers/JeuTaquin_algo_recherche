@@ -1,9 +1,25 @@
 import sys
 import time
 from jeu.jeuTaquin import JeuTaquin
-from algorithme_recherche.astar import astar_search
-from algorithme_recherche.bfs import bfs_search
-from algorithme_recherche.dfs import dfs_search
+from algorithme_recherche.astar import astar
+from algorithme_recherche.bfs import bfs
+from algorithme_recherche.dfs import dfs
+
+def calculate_final_state(k: int) -> dict:
+    """Calcule l'état final pour une grille de taille k."""
+    final_state = {i: ((i-1)//k, (i-1)%k) for i in range(1, k*k)}
+    final_state[0] = (k-1, k-1)
+    return final_state
+
+def display_path(jeu: JeuTaquin, path: list) -> None:
+    """Affiche le chemin de la solution étape par étape."""
+    print("\nAffichage du chemin de résolution:")
+    for i, state_key in enumerate(path):
+        print(f"\nÉtape {i}:")
+        jeu.set_current_state(eval(state_key))
+        jeu.afficher_etat()
+        if i < len(path) - 1:
+            input("Appuyez sur Entrée pour voir l'étape suivante...")
 
 def main():
     try:
@@ -13,55 +29,74 @@ def main():
             raise ValueError("La taille de la grille doit être d'au moins 2.")
         
         print("Sélectionnez la stratégie de recherche:")
-        print("1. A* Search (entrez 'astar')")
-        print("2. Breadth-First Search (entrez 'bfs')")
-        print("3. Depth-First Search (entrez 'dfs')")
+        print("1. A* Search (entrez 'astar' ou 'a')")
+        print("2. Breadth-First Search (entrez 'bfs' ou 'b')")
+        print("3. Depth-First Search (entrez 'dfs' ou 'd')")
         print("4. Jeu humain (entrez 'h')")
         strategy = input("Entrez la stratégie de recherche (astar/bfs/dfs/h): ").strip().lower()
 
-        if strategy not in ['astar', 'bfs', 'dfs', 'h','a','b','d']:
+        if strategy not in ['astar', 'bfs', 'dfs', 'h', 'a', 'b', 'd']:
             print("Stratégie invalide sélectionnée.")
             sys.exit(1)
+
+        # Demander si l'utilisateur veut voir le chemin de résolution
+        show_path = input("Voulez-vous voir le chemin de résolution ? (o/n): ").strip().lower()
+        stocker_chemin = show_path in ['o', 'oui', 'y', 'yes']
 
     except ValueError as e:
         print(f"Erreur: {e}")
         sys.exit(1)
 
     # Initialiser le jeu
-    jeu = JeuTaquin(k)  # Jeu avec taille k
-
-    # Générer un état initial aléatoire
+    jeu = JeuTaquin(k)
+    
+    # Générer l'état initial et le définir
     initial_state = jeu.generate_random_state()
     jeu.set_current_state(initial_state)
+    
+    # Calculer l'état final
+    final_state = calculate_final_state(k)
 
-    # Sélectionner l'algorithme de recherche en fonction du choix de l'utilisateur
+    print("\nÉtat initial:")
+    jeu.afficher_etat()
+    print("\nÉtat final attendu:")
+    jeu.display_final_grid()
+    print()
+
     if strategy != 'h':
-        start_time = time.time()  # Démarrer le chronomètre
+        start_time = time.time()
+        result = None
         
-        if strategy == 'bfs'or strategy == 'b':
+        if strategy in ['bfs', 'b']:
             print("Lancement de la recherche BFS...")
-            result_path = bfs_search(jeu, initial_state)  # Utilisation de bfs_search avec état initial
-        elif strategy == 'astar' or strategy == 'a':
+            result = bfs(jeu, initial_state, final_state, stocker_chemin=stocker_chemin)
+        elif strategy in ['astar', 'a']:
             print("Lancement de la recherche A*...")
-            result_path = astar_search(jeu, initial_state)  # Utilisation de astar_search avec état initial
-        elif strategy == 'dfs' or strategy == 'd':
+            result = astar(jeu, initial_state, final_state, stocker_chemin=stocker_chemin)
+        elif strategy in ['dfs', 'd']:
             print("Lancement de la recherche DFS...")
-            result_path = dfs_search(jeu, initial_state)  # Utilisation de dfs_search avec état initial
+            result = dfs(jeu, initial_state, final_state, stocker_chemin=stocker_chemin)
         
-        end_time = time.time()  # Arrêter le chronomètre
+        end_time = time.time()
+        execution_time = end_time - start_time
         
-        # Afficher le temps d'exécution
-        print(f"\nTemps d'exécution: {end_time - start_time:.3f} secondes")
+        print(f"\nTemps d'exécution: {execution_time:.12f} secondes")
 
-        # Afficher les résultats
-        if result_path:
+        if result:
             print("\nSolution trouvée!")
+            print("\nÉtat final atteint:")
+            jeu.set_current_state(result)
+            jeu.afficher_etat()
+            
+            if stocker_chemin and hasattr(jeu, 'solution_path') and jeu.solution_path:
+                print(f"\nNombre de mouvements: {len(jeu.solution_path) - 1}")
+                if show_path in ['o', 'oui', 'y', 'yes']:
+                    display_path(jeu, jeu.solution_path)
         else:
             print("\nAucune solution trouvée.")
     else:
-        # Si l'utilisateur choisit de jouer manuellement
-        print("Vous avez choisi de jouer le jeu manuellement.")
-        jeu.jeu()  # Lancer la méthode de jeu pour l'utilisateur
+        print("Mode jeu humain sélectionné. Utilisez h/b/g/d pour déplacer la case vide.")
+        jeu.jeu()
 
 if __name__ == "__main__":
     main()

@@ -1,56 +1,55 @@
 from algorithme_recherche.FilePile import FilePile
 from jeu.jeuTaquin import JeuTaquin
-from algorithme_recherche.utile import key, reconstruct_path
+from algorithme_recherche.utile import key, reconstruire_chemin
 
-def dfs_search(jeu: JeuTaquin, start_state: dict, final_state: dict, 
-               max_depth=100000, store_path: bool = False):
+def dfs(jeu: JeuTaquin, etat_initial: dict, etat_final: dict, prof_max=100000, stocker_chemin: bool = False):
     """
-    Depth-First Search avec profondeur maximale.
+    @brief Implémente l'algorithme de parcours en profondeur
+    @param jeu: Instance de la classe JeuTaquin
+    @param etat_initial: État initial du puzzle
+    @param etat_final: État final désiré
+    @param prof_max: Profondeur maximale de recherche (défaut: 100000)
+    @param stocker_chemin: Indique si le chemin de solution doit être stocké (défaut: False)
+    @return: État final si trouvé, None sinon
     
-    Args:
-        jeu: Instance de JeuTaquin
-        start_state: État initial
-        final_state: État final
-        max_depth: Profondeur maximale de recherche
-        store_path: Si True, stocke et retourne le chemin de la solution
+    Explore les états en profondeur d'abord jusqu'à une profondeur maximale donnée.
     """
-    visited = set()
-    stack = FilePile()
-    stack.pushFirst((start_state, 0))
+    visites = set()
+    pile = FilePile()
+    pile.pushFirst((etat_initial, 0))
     
-    start_key = key(start_state)
-    visited.add(start_key)
+    cle_depart = key(etat_initial)
+    visites.add(cle_depart)
     
-    # Initialiser parents comme un dict si store_path est True, sinon None
-    parents: dict[str, str | None] | None = {start_key: None} if store_path else None
+    parents: dict[str, str | None] | None = {cle_depart: None} if stocker_chemin else None
 
-    while stack:
-        popped_item = stack.pop()
+    while pile:
+        element_retire = pile.pop()
 
-        if popped_item is None:
+        if element_retire is None:
             continue
         
-        current_state, depth = popped_item
-        current_key = key(current_state)
+        etat_actuel, profondeur = element_retire
+        cle_courante = key(etat_actuel)
         
-        jeu.set_current_state(current_state)
+        jeu.set_current_state(etat_actuel)
         
-        if current_state == final_state:
-            if store_path and parents is not None:  # Vérification explicite
-                jeu.solution_path = reconstruct_path(parents, current_key)
-            return current_state
+        if etat_actuel == etat_final:
+            if stocker_chemin and parents is not None:
+                jeu.solution_path = reconstruire_chemin(parents, cle_courante)
+            return etat_actuel
 
-        if depth < max_depth:
-            possible_moves = jeu.get_possible_moves()
+        if profondeur < prof_max:
+            mouvements_possibles = jeu.get_possible_moves()
             
-            for next_state in possible_moves:
-                next_key = key(next_state)
-                if next_key not in visited:
-                    visited.add(next_key)
-                    if store_path and parents is not None:  # Vérification explicite
-                        parents[next_key] = current_key
-                    stack.pushFirst((next_state, depth + 1))
+            for etat_suivant in mouvements_possibles:
+                cle_suivante = key(etat_suivant)
+                if cle_suivante not in visites:
+                    visites.add(cle_suivante)
+                    if stocker_chemin and parents is not None:
+                        parents[cle_suivante] = cle_courante
+                    pile.pushFirst((etat_suivant, profondeur + 1))
 
-    jeu.display_state()
-    print("État final non trouvé avec DFS!")
+    jeu.afficher_etat()
+    print("État final non trouvé avec dfs!")
     return None

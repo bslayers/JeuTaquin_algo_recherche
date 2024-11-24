@@ -3,9 +3,9 @@ import pstats
 import os
 from datetime import datetime
 from jeu.jeuTaquin import JeuTaquin
-from algorithme_recherche.astar import astar_search
-from algorithme_recherche.bfs import bfs_search
-from algorithme_recherche.dfs import dfs_search
+from algorithme_recherche.astar import astar
+from algorithme_recherche.bfs import bfs
+from algorithme_recherche.dfs import dfs
 
 def run_astar_test(size):
     jeu = JeuTaquin(size)
@@ -20,7 +20,7 @@ def run_astar_test(size):
 
     # Ajoute un check périodique pour afficher les stats pendant l'exécution
     try:
-        astar_search(jeu, initial_state, final_state)
+        astar(jeu, initial_state, final_state)
     except KeyboardInterrupt:
         print("Profiling interrompu.")
     

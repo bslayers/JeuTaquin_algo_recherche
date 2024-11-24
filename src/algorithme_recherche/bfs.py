@@ -1,54 +1,55 @@
 from jeu.jeuTaquin import JeuTaquin
 from algorithme_recherche.FilePile import FilePile
-from algorithme_recherche.utile import key, reconstruct_path
+from algorithme_recherche.utile import key, reconstruire_chemin
 
-def bfs_search(jeu: JeuTaquin, start_state: dict, final_state: dict, 
-               memory_limit=5000000, store_path: bool = False):
+def bfs(jeu: JeuTaquin, etat_initial: dict, etat_final: dict, stocker_chemin: bool = False):
     """
-    Breadth-First Search avec limite de mémoire optionnelle.
+    @brief Implémente l'algorithme de parcours en largeur
+    @param jeu: Instance de la classe JeuTaquin
+    @param etat_initial: État initial du puzzle
+    @param etat_final: État final désiré
+    @param stocker_chemin: Indique si le chemin de solution doit être stocké (défaut: False)
+    @return: État final si trouvé, None sinon
     
-    Args:
-        jeu: Instance de JeuTaquin
-        start_state: État initial
-        final_state: État final
-        memory_limit: Limite de mémoire (nombre max d'états)
-        store_path: Si True, stocke et retourne le chemin de la solution
+    Explore systématiquement tous les états possibles niveau par niveau jusqu'à
+    trouver l'état final ou épuiser tous les états possibles.
     """
-    visited = set()
-    queue = FilePile(max_size=memory_limit)
+    visites = set()
+    file = FilePile()
 
-    queue.pushLast(start_state)
-    start_key = key(start_state)
-    visited.add(start_key)
+    file.pushLast(etat_initial)
+    cle_depart = key(etat_initial)
+    visites.add(cle_depart)
     
-    # Initialiser parents comme un dict si store_path est True, sinon None
-    parents: dict[str, str | None] | None = {start_key: None} if store_path else None
+    parents: dict[str, str | None] | None = {cle_depart: None} if stocker_chemin else None
 
-    while queue:
-        current_state = queue.pop()
-        if current_state is None:
+    while file:
+        etat_actuel = file.pop()
+        if etat_actuel is None:
             continue
             
-        current_key = key(current_state)
+        cle_courante = key(etat_actuel)
         
-        jeu.set_current_state(current_state)
+        jeu.set_current_state(etat_actuel)
 
-        if current_state == final_state:
-            if store_path and parents is not None:  # Vérification explicite
-                jeu.solution_path = reconstruct_path(parents, current_key)
-            return current_state
+        if etat_actuel == etat_final:
+            if stocker_chemin and parents is not None:
+                jeu.solution_path = reconstruire_chemin(parents, cle_courante)
+            return etat_actuel
 
-        possible_moves = jeu.get_possible_moves()
+        mouvements_possibles = jeu.get_possible_moves()
         
-        for next_state in possible_moves:
-            next_key = key(next_state)
+        for etat_suivant in mouvements_possibles:
+            cle_suivante = key(etat_suivant)
             
-            if next_key not in visited:
-                visited.add(next_key)
-                if store_path and parents is not None:  # Vérification explicite
-                    parents[next_key] = current_key
-                queue.pushLast(next_state)
+            if cle_suivante not in visites:
+                visites.add(cle_suivante)
+                if stocker_chemin and parents is not None:
+                    parents[cle_suivante] = cle_courante
+                file.pushLast(etat_suivant)
 
-    jeu.display_state()
-    print("État final non trouvé avec BFS!")
+    jeu.afficher_etat()
+    print("État final non trouvé avec bfs!")
     return None
+
+
