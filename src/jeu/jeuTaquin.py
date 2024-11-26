@@ -191,6 +191,30 @@ class JeuTaquin:
         new_state[value2] = pos1
         new_state[0] = pos2
         return new_state
+    
+    def afficher_chemin_solution(self) -> None:
+        if not self.solution_path:
+            print("Aucun chemin de solution disponible")
+            return
+        
+        print("\nChemin de la solution: ")
+        for i in range(len(self.solution_path)):
+            state_str = self.solution_path[i]
+            state = {}
+
+            positions = state_str[1:-1].split(')(')
+
+            for index, pos in enumerate(positions):
+                coords = pos.split(',')
+                x = int(coords[0].strip())
+                y = int(coords[1].strip())
+                state[index] = (x, y)
+
+            print(f"\nÉtape {i}:")
+            self.set_current_state(state)
+            self.afficher_etat()
+
+        print(f"\nNombre total de mouvements : {len(self.solution_path) - 1}")
 
     def afficher_etat(self) -> None:
         """

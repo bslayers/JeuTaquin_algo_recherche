@@ -48,7 +48,6 @@ def bfs(jeu: JeuTaquin, etat_initial: dict, etat_final: dict, stocker_chemin: bo
                     parents[cle_suivante] = cle_courante
                 file.pushLast(etat_suivant)
 
-    jeu.afficher_etat()
     print("État final non trouvé avec bfs!")
     return None
 

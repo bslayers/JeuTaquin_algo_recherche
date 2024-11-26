@@ -11,19 +11,8 @@ def calculate_final_state(k: int) -> dict:
     final_state[0] = (k-1, k-1)
     return final_state
 
-def display_path(jeu: JeuTaquin, path: list) -> None:
-    """Affiche le chemin de la solution étape par étape."""
-    print("\nAffichage du chemin de résolution:")
-    for i, state_key in enumerate(path):
-        print(f"\nÉtape {i}:")
-        jeu.set_current_state(eval(state_key))
-        jeu.afficher_etat()
-        if i < len(path) - 1:
-            input("Appuyez sur Entrée pour voir l'étape suivante...")
-
 def main():
     try:
-        # Demander la taille de la grille
         k = int(input("Entrez la taille de la grille (k x k): "))
         if k < 2:
             raise ValueError("La taille de la grille doit être d'au moins 2.")
@@ -39,22 +28,18 @@ def main():
             print("Stratégie invalide sélectionnée.")
             sys.exit(1)
 
-        # Demander si l'utilisateur veut voir le chemin de résolution
-        show_path = input("Voulez-vous voir le chemin de résolution ? (o/n): ").strip().lower()
+        show_path = input("Voulez-vous voir le chemin de la solution de la grille? (o/n): ").strip().lower()
         stocker_chemin = show_path in ['o', 'oui', 'y', 'yes']
 
     except ValueError as e:
         print(f"Erreur: {e}")
         sys.exit(1)
 
-    # Initialiser le jeu
     jeu = JeuTaquin(k)
-    
-    # Générer l'état initial et le définir
+
     initial_state = jeu.generate_random_state()
     jeu.set_current_state(initial_state)
-    
-    # Calculer l'état final
+
     final_state = calculate_final_state(k)
 
     print("\nÉtat initial:")
@@ -68,13 +53,13 @@ def main():
         result = None
         
         if strategy in ['bfs', 'b']:
-            print("Lancement de la recherche BFS...")
+            print("Lancement de la recherche BFS:")
             result = bfs(jeu, initial_state, final_state, stocker_chemin=stocker_chemin)
         elif strategy in ['astar', 'a']:
-            print("Lancement de la recherche A*...")
+            print("Lancement de la recherche A*:")
             result = astar(jeu, initial_state, final_state, stocker_chemin=stocker_chemin)
         elif strategy in ['dfs', 'd']:
-            print("Lancement de la recherche DFS...")
+            print("Lancement de la recherche DFS:")
             result = dfs(jeu, initial_state, final_state, stocker_chemin=stocker_chemin)
         
         end_time = time.time()
@@ -88,14 +73,13 @@ def main():
             jeu.set_current_state(result)
             jeu.afficher_etat()
             
-            if stocker_chemin and hasattr(jeu, 'solution_path') and jeu.solution_path:
-                print(f"\nNombre de mouvements: {len(jeu.solution_path) - 1}")
+            if stocker_chemin and jeu.solution_path:
                 if show_path in ['o', 'oui', 'y', 'yes']:
-                    display_path(jeu, jeu.solution_path)
+                    jeu.afficher_chemin_solution()
         else:
             print("\nAucune solution trouvée.")
     else:
-        print("Mode jeu humain sélectionné. Utilisez h/b/g/d pour déplacer la case vide.")
+        print("Mode de jeu normal selectionné. Utilisez h/b/g/d pour déplacer la case vide.")
         jeu.jeu()
 
 if __name__ == "__main__":

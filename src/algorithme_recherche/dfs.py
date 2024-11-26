@@ -50,6 +50,5 @@ def dfs(jeu: JeuTaquin, etat_initial: dict, etat_final: dict, prof_max=100000, s
                         parents[cle_suivante] = cle_courante
                     pile.pushFirst((etat_suivant, profondeur + 1))
 
-    jeu.afficher_etat()
     print("État final non trouvé avec dfs!")
     return None
