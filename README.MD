@@ -40,6 +40,8 @@ résolvables
 - Implémentation des quatre directions possibles (haut, bas, gauche, droite)
 - Validation des mouvements selon la position de la case vide
 
+<div style="page-break-after: always;"></div>
+
 ### 2.3 Spécificités des Algorithmes
 
 **1. A\* (astar.py)**
@@ -92,6 +94,8 @@ taquin sur ce genre de taille en raison de la compléxité trop élevé pour ce 
 
 -AMD RX 7800XT
 
+<div style="page-break-after: always;"></div>
+
 ### 3.2 Résultats des tests - 2024-11-24 13:53:
 
 **Résultats pour grille 2 x 2**
@@ -139,6 +143,8 @@ taquin sur ce genre de taille en raison de la compléxité trop élevé pour ce 
 - Temps maximum: 1,602700948715 secondes
 - Temps moyen: 0.834813608217 secondes
 
+<div style="page-break-after: always;"></div>
+
 **DFS**
 
 - Tests complétés: 1000
@@ -157,6 +163,7 @@ taquin sur ce genre de taille en raison de la compléxité trop élevé pour ce 
 - Temps maximum: 40.760850667953 secondes
 - Temps moyen: 9.883096008163 secondes
 
+<div style="page-break-after: always;"></div>
 
 ## 4. Analyse Comparative des Algorithmes
 
@@ -186,7 +193,6 @@ taquin sur ce genre de taille en raison de la compléxité trop élevé pour ce 
   - Inadapté aux grilles 4×4 et plus
   - Temps de calcul important sur les grilles moyennes
 
-
 **DFS**
 
 - **Points Forts** :
@@ -199,6 +205,7 @@ taquin sur ce genre de taille en raison de la compléxité trop élevé pour ce 
   - Risque de boucles infinies sans limite de profondeur
   - Performances variables selon les cas
 
+<div style="page-break-after: always;"></div>
 
 ## 5. Recommandations et Perspectives d'Amélioration
 
@@ -225,7 +232,6 @@ taquin sur ce genre de taille en raison de la compléxité trop élevé pour ce 
 
 - Parallélisation des calculs
 
-
 ## 6. Stockage et affichage du chemin de résolution
 
 ### 6.1 Introduction
@@ -238,6 +244,8 @@ faire une partie.
 
 Toutefois les résultats des tests ont été lancée via le fichier **test.py** pour pouvoir tester sur un grands nombre
 de grilles différente.
+
+<div style="page-break-after: always;"></div>
 
 ## Implémentation
 
@@ -256,6 +264,7 @@ def bfs(jeu, etat_initial, etat_final, stocker_chemin=False):
 def dfs(jeu, etat_initial, etat_final, stocker_chemin=False):
 # ...
 ```
+
 ### Fonctionnement interne
 
 Lorsque ```stocker_chemin``` est activé :
@@ -281,6 +290,8 @@ Il est important de noter que le stockage du chemin de résolution du Jeu du Taq
 
 Pour cette raison, cette fonctionnalité est optionnelle et peut être désactivée si seule la solution finale est
 nécessaire.
+
+<div style="page-break-after: always;"></div>
 
 ## 7. Conclusion
 
